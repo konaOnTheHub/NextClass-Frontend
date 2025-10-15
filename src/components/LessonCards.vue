@@ -8,7 +8,7 @@
 
 <template>
     <div class="grid gap-10 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <Card v-for="lesson in lessonData" :key="lesson.id" :lesson="lesson" />
+        <Card v-for="lesson in lessons" :key="lesson.id" :lesson="lesson" />
 
     </div>
 </template>
