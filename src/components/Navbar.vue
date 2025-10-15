@@ -10,7 +10,7 @@
         </div>
 
         <!-- Middle: Search Field -->
-        <div class="absolute left-1/2 transform -translate-x-1/2">
+        <div class="absolute left-1/2 transform -translate-x-1/2 hidden lg:block">
             <input 
                 type="text" 
                 placeholder="Search classes..." 
