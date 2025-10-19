@@ -50,7 +50,7 @@
                     </div>
                 </div>
                 
-                <button class="text-white border-2 border-indigo-500 rounded-full px-4 py-1 hover:bg-indigo-500 transition">Add to cart</button>
+                <button class="cursor-pointer text-white border-2 border-indigo-500 rounded-full px-4 py-1 hover:bg-indigo-500 transition">Add to cart</button>
             </div>
         </div>
     </div>

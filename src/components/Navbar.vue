@@ -82,7 +82,7 @@ onMounted(() => {
                     placeholder="Search"
                     class="w-60 h-8 pl-10 rounded-full border-2 border-indigo-500 text-white focus:outline-none block lg:hidden">
                 <button @click="handleShowSearch" ref="searchButton" tabindex="0"
-                    class="absolute left-0 top-0 w-8 h-8 block lg:hidden bg-indigo-500 rounded-full p-1.5">
+                    class="cursor-pointer absolute left-0 top-0 w-8 h-8 block lg:hidden bg-indigo-500 rounded-full p-1.5">
                     <img src="/src/assets/search.svg" alt="Search">
                 </button>
                 <!--Search-->
