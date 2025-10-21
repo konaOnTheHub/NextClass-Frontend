@@ -1,6 +1,8 @@
 <script setup>
+
     import {onBeforeMount, onBeforeUnmount, onMounted, ref} from 'vue';
     const showSortDropdown = ref(false);
+    
     const sortOptions = ref([
         {id: 'subj', name:'Subject'},
         {id: 'loc', name:'Location'},
@@ -15,23 +17,29 @@
             showSortDropdown.value = false;
         };
     }
-    //State 0 - no sort, State 1 - ascending, State 2 - Descending
-    const sortState = ref({
-        id: null,
-        state: 0,
+
+    const emit = defineEmits(['update:sortState'])
+
+    const props = defineProps({
+        sortState: {
+            type: Object,
+            required: true
+        }
     });
 
     function cycleSort(cycleId) {
+        const newSort = {...props.sortState}
         //If the sort by option changes reset the state instead of continuing it
-        if (sortState.value.id != cycleId) {
-            sortState.value.state = 0;
+        if (newSort.id != cycleId) {
+            newSort.state = 0;
         };
-        sortState.value.id = cycleId;
-        if (sortState.value.state < 2) {
-            sortState.value.state += 1;
+        newSort.id = cycleId;
+        if (newSort.state < 2) {
+            newSort.state += 1;
         } else {
-            sortState.value.state = null;
+            newSort.state = 0;
         }
+        emit('update:sortState', newSort);
     }
 
     onMounted(() => document.addEventListener('click', closeDropdown));
