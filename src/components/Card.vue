@@ -11,21 +11,24 @@
                 text: "Limited",
                 colour: "bg-amber-600",
                 hoverColour: "hover:bg-amber-800",
-                numSpaces: numSpaces
+                numSpaces: numSpaces,
+                isDisabled: false
             };
         } else if (numSpaces == 0) {
             return {
                 text: "Closed",
                 colour: "bg-red-600",
                 hoverColour: "hover:bg-gray-800",
-                numSpaces: numSpaces
+                numSpaces: numSpaces,
+                isDisabled: true
             }
         } else {
             return {
                 text: "Open",
                 colour: "bg-green-600",
                 hoverColour: "hover:bg-green-800",
-                numSpaces: numSpaces
+                numSpaces: numSpaces,
+                isDisabled: false
             }
         }
     });
@@ -50,7 +53,7 @@
                     </div>
                 </div>
                 
-                <button class="flex flex-row justify-between cursor-pointer text-white border-2 border-indigo-500 rounded-lg px-4 py-1 hover:bg-indigo-500 transition">
+                <button :disabled="availability.isDisabled" class="flex flex-row justify-between cursor-pointer text-white border-2 border-indigo-500 rounded-lg px-4 py-1 disabled:hover:bg-gray-800 disabled:cursor-not-allowed hover:bg-indigo-500 transition">
                     <span>Add to cart</span>
                     <img class="h-6 w-6 pl-2" src="../assets/shoppingCart.svg">
                 </button>
