@@ -1,5 +1,5 @@
 <script setup>
-    import {defineProps,computed} from 'vue';
+    import {defineProps,computed, defineEmits} from 'vue';
     const props = defineProps ({
         lesson: Object
     });
@@ -32,6 +32,10 @@
             }
         }
     });
+    const emit = defineEmits(['add-to-cart']);
+    function addToCart() {
+        emit('add-to-cart', props.lesson);
+    }
 </script>
 
 <template>
@@ -53,9 +57,9 @@
                     </div>
                 </div>
                 
-                <button :disabled="availability.isDisabled" class="flex flex-row justify-between cursor-pointer text-white border-2 border-indigo-500 rounded-lg px-4 py-1 disabled:hover:bg-gray-800 disabled:cursor-not-allowed hover:bg-indigo-500 transition">
+                <button @click="addToCart(lesson)" :disabled="availability.isDisabled" class="flex flex-row justify-between cursor-pointer text-white border-2 border-indigo-500 rounded-lg px-4 py-1 disabled:hover:bg-gray-800 disabled:cursor-not-allowed hover:bg-indigo-500 transition">
                     <span>Add to cart</span>
-                    <img class="h-6 w-6 pl-2" src="../assets/shoppingCart.svg">
+                    <img class="h-6 w-6 ml-2" src="../assets/shoppingCart.svg">
                 </button>
             </div>
         </div>

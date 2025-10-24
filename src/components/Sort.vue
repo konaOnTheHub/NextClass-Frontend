@@ -1,6 +1,6 @@
 <script setup>
 
-    import {onBeforeMount, onBeforeUnmount, onMounted, ref} from 'vue';
+    import { onBeforeUnmount, onMounted, ref} from 'vue';
     const showSortDropdown = ref(false);
     
     const sortOptions = ref([
