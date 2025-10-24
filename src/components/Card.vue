@@ -3,7 +3,7 @@
     const props = defineProps ({
         lesson: Object
     });
-
+    //Using computed reactively change the availability bubble depending on remaining spaces
     const availability = computed(() => {
         let numSpaces = props.lesson.spaces;
         if (numSpaces <= 3 && numSpaces > 0) {
@@ -32,7 +32,9 @@
             }
         }
     });
+    //Define add-to-cart emit which is bubbled through lesson cards to app.vue
     const emit = defineEmits(['add-to-cart']);
+    //On addToCart emit add-to-cart
     function addToCart() {
         emit('add-to-cart', props.lesson);
     }
