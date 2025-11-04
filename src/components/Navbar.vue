@@ -1,5 +1,6 @@
 <script setup>
 import { ref, nextTick, onMounted, onBeforeUnmount, defineProps } from 'vue';
+import { RouterLink } from 'vue-router';
 
 //States (Search)
 const showSearch = ref(false);
@@ -70,7 +71,7 @@ onBeforeUnmount(() => {
     <nav class="flex flex-row w-full bg-gray-950 fixed top-0 h-14 items-center border-b-2 border-b-gray-600 z-2">
         <!-- Left Logo -->
         <div class="flex items-center h-full">
-            <a href="#" class="text-4xl font-bold text-white leading-none m-3">NextClass</a>
+            <RouterLink to="/" class="text-4xl font-bold text-white leading-none m-3">NextClass</RouterLink>
         </div>
 
         <!-- Middle Search Field -->
@@ -104,15 +105,15 @@ onBeforeUnmount(() => {
 
             <div class="flex items-center h-full mr-3">
                 <div class="flex items-center space-x-6">
-                    <a v-if="!showSearch" href="#"
-                        class="text-white text-base m-3 hover:text-indigo-400 transition-colors">Home</a>
-                    <a v-if="!showSearch" href="#"
-                        class="text-white text-base m-3 hover:text-indigo-400 transition-colors">Contact</a>
-                    <a v-if="!showSearch" href="#"
-                        class="text-white text-base m-3 hover:text-indigo-400 transition-colors">About</a>
+                    <RouterLink v-if="!showSearch" to="/"
+                        class="text-white text-base m-3 hover:text-indigo-400 transition-colors">Home</RouterLink>
+                    <RouterLink v-if="!showSearch" to="#"
+                        class="text-white text-base m-3 hover:text-indigo-400 transition-colors">Contact</RouterLink>
+                    <RouterLink v-if="!showSearch" to="#"
+                        class="text-white text-base m-3 hover:text-indigo-400 transition-colors">About</RouterLink>
 
                     <!-- Shopping Cart Button -->
-                    <button class="relative flex items-center justify-center w-10 h-10" title="View Cart">
+                    <RouterLink to="/cart" class="relative flex items-center justify-center w-10 h-10" title="View Cart">
 
                         <!-- Cart Icon -->
                         <img src="/src/assets/shoppingCart.svg" alt="Cart" class="w-6 h-6 object-contain" />
@@ -122,7 +123,7 @@ onBeforeUnmount(() => {
                rounded-full w-5 h-5 flex items-center justify-center shadow-md">
                             {{ cartCount }}
                         </span>
-                    </button>
+                    </RouterLink>
                 </div>
             </div>
         </div>
