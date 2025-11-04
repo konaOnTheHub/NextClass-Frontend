@@ -38,6 +38,7 @@ function addToCart(lesson) {
     if (cart.getItem.includes(lesson)) {
         return
     }
+    lesson.spaces -= 1;
     cart.addItem(lesson);
 }
 </script>
