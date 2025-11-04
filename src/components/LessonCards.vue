@@ -46,18 +46,11 @@ const sortedLessons = computed(() => {
   return sorted;
 });
 
-//Take emit from cards and pass it to app.vue
-defineProps({
-  lesson: {
-    type: Object,
-  }
-});
-const emit = defineEmits(['add-to-cart'])
 </script>
 
 <template>
   <Sort v-model:sort-state="sortState" />
   <div class="grid gap-10 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-    <Card @add-to-cart="lesson => emit('add-to-cart', lesson)" v-for="lesson in sortedLessons" :key="lesson.id" :lesson="lesson" />
+    <Card v-for="lesson in sortedLessons" :key="lesson.id" :lesson="lesson" />
   </div>
 </template>

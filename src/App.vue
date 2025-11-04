@@ -1,26 +1,16 @@
 <script setup>
-import {ref} from 'vue';
 import Navbar from '@/components/Navbar.vue';
-import LessonCards from '@/components/LessonCards.vue';
-import HomeTitle from './components/HomeTitle.vue';
+import { ref } from 'vue';
+import { RouterView } from 'vue-router';
+import { useCartStore } from '@/stores/cart'
 
-const cart = ref([]);
-
-const addToCart = (lesson) => {
-  if (cart.value.includes(lesson)) {
-    return;
-  }
-  cart.value.push(lesson);
-  lesson.spaces -= 1;
-}
+const cart = useCartStore()
+cart.loadFromLocalStorage()
 </script>
 
 <template>
-  <Navbar :cartCount="cart.length.toString()" />
-  <div class="mt-24 px-4 max-w-screen-xl mx-auto">
-    <HomeTitle />
-    <LessonCards @add-to-cart="addToCart" />
-  </div>
+  <Navbar :cartCount="cart.getItem.length.toString()" />
+  <RouterView />
 </template>
 
 <style scoped></style>
