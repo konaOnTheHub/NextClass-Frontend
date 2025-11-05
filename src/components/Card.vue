@@ -35,7 +35,8 @@ const availability = computed(() => {
 import { useCartStore } from '@/stores/cart'
 const cart = useCartStore()
 function addToCart(lesson) {
-    //Includes only partially works here as on page refresh the object ref changes and duplicate is added
+    //Check if the lesson is already part of the cart
+    //Includes only partially works here as on page refresh the object ref changes and duplicate is added so I changed it to some()
     if (cart.getItem.some(items => items.id === lesson.id)) {
         return
     }
