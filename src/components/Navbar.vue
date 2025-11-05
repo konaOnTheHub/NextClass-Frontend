@@ -1,6 +1,6 @@
 <script setup>
-import { ref, nextTick, onMounted, onBeforeUnmount, defineProps } from 'vue';
-import { RouterLink } from 'vue-router';
+import { ref, nextTick, onMounted, onBeforeUnmount, defineProps, computed } from 'vue';
+import { RouterLink, useRoute } from 'vue-router';
 
 //States (Search)
 const showSearch = ref(false);
@@ -51,10 +51,23 @@ function handleClickOutside(event) {
     showSearchDropdown.value = false;
 };
     //Define cart count prop
-    defineProps({
+    const props = defineProps({
         cartCount: {
             type: String,
         },
+    });
+    //When on cart page cart icon should lead to home
+    //Home should only lead to cart when there's something in the cart
+    //Disable button when on home but cart is empty.
+    const route = useRoute();
+    const cartLink = computed(() => {
+        if (route.path === "/cart") {
+            return "/"
+        } else if (route.path === "/" && props.cartCount > 0) {
+            return "/cart"
+        } else {
+            return "/"
+        }
     });
    
 
@@ -113,7 +126,7 @@ onBeforeUnmount(() => {
                         class="text-white text-base m-3 hover:text-indigo-400 transition-colors">About</RouterLink>
 
                     <!-- Shopping Cart Button -->
-                    <RouterLink to="/cart" class="relative flex items-center justify-center w-10 h-10" title="View Cart">
+                    <RouterLink :to="cartLink" class="relative flex items-center justify-center w-10 h-10" title="View Cart">
 
                         <!-- Cart Icon -->
                         <img src="/src/assets/shoppingCart.svg" alt="Cart" class="w-6 h-6 object-contain" />
