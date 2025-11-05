@@ -35,7 +35,8 @@ const availability = computed(() => {
 import { useCartStore } from '@/stores/cart'
 const cart = useCartStore()
 function addToCart(lesson) {
-    if (cart.getItem.includes(lesson)) {
+    //Includes only partially works here as on page refresh the object ref changes and duplicate is added
+    if (cart.getItem.some(items => items.id === lesson.id)) {
         return
     }
     lesson.spaces -= 1;
