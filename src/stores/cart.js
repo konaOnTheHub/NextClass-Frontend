@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
-
+//Using pinia define the Cart store
+//It works as a global variable  that I can import into any component
+//Done this so that I don't have to emit or prop the value of cart from component to component
 export const useCartStore = defineStore('cart', {
   state: () => ({
     items: []
