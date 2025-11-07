@@ -103,7 +103,7 @@ function handleCheckout() {
                         <input v-model="formValues.name" type="text" placeholder="Enter your name"
                             class="w-full border-2 text-gray-300 border-gray-600 rounded-lg p-2 focus:outline-none focus:border-indigo-500">
                         <!--Show only if name is invalid-->
-                        <h3 v-if="!nameValid" class="text-gray-300 text-xs pt-1">The name must be longer than 3 letters
+                        <h3 v-if="!nameValid && formValues.name.length > 0" class="text-gray-300 text-xs pt-1">The name must be longer than 3 letters
                         </h3>
                     </div>
                     <!--Input for phone number-->
@@ -112,8 +112,8 @@ function handleCheckout() {
                         <input v-model="formValues.phone" type="tel" placeholder="Enter your phone number"
                             class="w-full border-2 text-gray-300 border-gray-600 rounded-lg p-2 focus:outline-none focus:border-indigo-500">
                         <!--Show only if phone is invalid-->
-                        <h3 v-if="!phoneValid" class="text-gray-300 text-xs pt-1">The phone number be 11
-                            digits</h3>
+                        <h3 v-if="!phoneValid && formValues.phone.length > 0" class="text-gray-300 text-xs pt-1">The phone number be 11
+                            digits and start with 0</h3>
                     </div>
                     <div class="flex justify-end">
                         <!--Disabled until both inputs are valid-->
