@@ -1,6 +1,6 @@
 <script setup>
 import { useCartStore } from '@/stores/cart'
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 //Import pinia cart store
 const cart = useCartStore()
@@ -8,10 +8,51 @@ const cart = useCartStore()
 const total = computed(() => {
     return cart.getItem.reduce((sum, item) => sum + item.price, 0);
 })
+
+
+//Hide or show checkout modal
+const showCheckoutModal = ref(false);
+
+//Hide or show success message
+const showSuccessMessage = ref(false);
+
+//These a reactively modelled to the forms
+const formValues = ref({
+    name: "",
+    phone: ""
+});
+//Regex for validating phone number (must be 11 digits long and must start with 0)
+const phoneRegex = /^0\d{4}\s?\d{6}$/;
+
+//Reactively calculate validity of name input (must be longer than 3 chars)
+const nameValid = computed(() => formValues.value.name.length >= 3);
+//Reactively calculate validity of phone number
+const phoneValid = computed(() => phoneRegex.test(formValues.value.phone));
+
+//Handle checkout function
+function handleCheckout() {
+    if (nameValid && phoneValid) {
+        // TODO LATER IMPLEMENT FETCH!!!
+        //Clear cart
+        cart.clearAll();
+        //Reset form values
+        formValues.value = {
+            name: "",
+            phone: ""
+        }
+        showCheckoutModal.value = false;
+        showSuccessMessage.value = true;
+
+        setTimeout(() => {
+            showSuccessMessage.value = false
+        }, 3000)
+
+    }
+}
 </script>
 
 <template>
-    <div class="container mx-auto mt-20 p-6">
+    <div class="container mx-auto mt-20 p-6 z-0">
         <div class="text-center">
             <h1 class=" font-extrabold text-3xl mb-2 text-indigo-500">Your Cart</h1>
         </div>
@@ -28,7 +69,7 @@ const total = computed(() => {
                         class="text-blue-500 hover:underline cursor-pointer text-sm absolute bottom-0 left-0 pb-3 pl-5">Remove</button>
                 </div>
             </div>
-            <!--Only show cart is empty when cart is empty-->
+            <!--Only show when cart is empty-->
             <div v-if="cart.getItem.length === 0" class="h-32 flex items-center justify-center">
                 <h3 class="text-gray-300 text-lg">Your cart is empty</h3>
             </div>
@@ -37,7 +78,7 @@ const total = computed(() => {
         <!--Only show total and checkout if there is something in the cart-->
         <div v-if="cart.getItem.length > 0" class="max-w-2xl mx-auto relative mt-3">
             <div class="flex justify-end">
-                <button
+                <button @click="showCheckoutModal = !showCheckoutModal"
                     class="flex flex-row justify-between px-4 py-1 text-white border-2 border-indigo-500 hover:bg-indigo-500 transition cursor-pointer rounded-lg">
                     <span>Checkout</span>
                     <img class="h-6 w-6 ml-2" src="../assets/shoppingCart.svg">
@@ -45,5 +86,54 @@ const total = computed(() => {
                 <span class="text-white font-bold text-lg pr-5 pl-3 py-1">Total: £{{ total }}</span>
             </div>
         </div>
+        <!--Checkout modal-->
+        <div v-if="showCheckoutModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-1">
+            <div class="relative bg-[#101828] p-8 w-96 rounded-2xl border-2 border-indigo-500">
+                <div class="flex justify-center">
+                    <button @click="showCheckoutModal = !showCheckoutModal">
+                        <img src="../assets/xIcon.svg" alt="Close window"
+                            class="w-4 h-4 absolute right-0 top-0 mt-4 mr-4 cursor-pointer">
+                    </button>
+                    <h2 class="text-2xl font-bold text-indigo-500 mb-4 text-center">Checkout</h2>
+                </div>
+                <form @submit.prevent class="space-y-4">
+                    <!--Input for name-->
+                    <div>
+                        <label class=" font-semibold text-white">Name</label>
+                        <input v-model="formValues.name" type="text" placeholder="Enter your name"
+                            class="w-full border-2 text-gray-300 border-gray-600 rounded-lg p-2 focus:outline-none focus:border-indigo-500">
+                        <!--Show only if name is invalid-->
+                        <h3 v-if="!nameValid" class="text-gray-300 text-xs pt-1">The name must be longer than 3 letters
+                        </h3>
+                    </div>
+                    <!--Input for phone number-->
+                    <div>
+                        <label class=" font-semibold text-white">Phone Number</label>
+                        <input v-model="formValues.phone" type="tel" placeholder="Enter your phone number"
+                            class="w-full border-2 text-gray-300 border-gray-600 rounded-lg p-2 focus:outline-none focus:border-indigo-500">
+                        <!--Show only if phone is invalid-->
+                        <h3 v-if="!phoneValid" class="text-gray-300 text-xs pt-1">The phone number be 11
+                            digits</h3>
+                    </div>
+                    <div class="flex justify-end">
+                        <!--Disabled until both inputs are valid-->
+                        <!--On click call handle checkout function-->
+                        <button :disabled="!(nameValid && phoneValid)" @click="handleCheckout()"
+                            class="flex flex-row justify-between px-4 py-1 text-white border-2 border-indigo-500 hover:bg-indigo-500 transition cursor-pointer rounded-lg disabled:cursor-not-allowed disabled:border-gray-950 disabled:hover:bg-gray-800">
+                            <span>Checkout</span>
+                            <img class="h-6 w-6 ml-2" src="../assets/shoppingCart.svg">
+                        </button>
+
+
+                    </div>
+                </form>
+            </div>
+        </div>
+        <transition name="fade">
+            <div v-if="showSuccessMessage"
+                class="fixed bottom-10 right-10 bg-gray-950 border border-gray-600 text-white px-6 py-3 rounded-xl shadow-lg font-semibold">
+                Your order has been placed. Thank you!
+            </div>
+        </transition>
     </div>
 </template>
