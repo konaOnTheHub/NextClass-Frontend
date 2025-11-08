@@ -2,12 +2,13 @@
 import Card from '@/components/Card.vue';
 import { ref, computed, onMounted} from 'vue';
 import Sort from './Sort.vue';
+import {API_CONFIG} from '@/apiConfig'
 
 const lessonData = ref([]);
 
 const fetchLessons = async () => {
   try {
-    const res = await fetch('http://localhost:5555/lessons');
+    const res = await fetch(`${API_CONFIG.API_URL}/lessons`);
     if (!res.ok) {
       throw new Error("Failed to fetch lessons");
     }
