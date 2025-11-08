@@ -1,6 +1,5 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue';
-import { ref } from 'vue';
 import { RouterView } from 'vue-router';
 import { useCartStore } from '@/stores/cart'
 

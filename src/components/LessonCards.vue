@@ -1,8 +1,23 @@
 <script setup>
 import Card from '@/components/Card.vue';
-import { ref, computed, defineProps, defineEmits } from 'vue';
-import lessonData from '@/lessons.json';
+import { ref, computed, onMounted} from 'vue';
 import Sort from './Sort.vue';
+
+const lessonData = ref([]);
+
+const fetchLessons = async () => {
+  try {
+    const res = await fetch('http://localhost:5555/lessons');
+    if (!res.ok) {
+      throw new Error("Failed to fetch lessons");
+    }
+    lessonData.value = await res.json();
+  } catch (err) {
+    console.log("Error: ", err);
+  }
+};
+
+onMounted(fetchLessons);
 
 // Original lessons (unsorted)
 const originalLessons = ref(lessonData);
