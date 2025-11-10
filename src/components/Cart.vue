@@ -2,13 +2,13 @@
 import { useCartStore } from '@/stores/cart'
 import { computed, ref } from 'vue';
 
+
 //Import pinia cart store
 const cart = useCartStore()
 //Reactively calculate the total price of lessons in cart
 const total = computed(() => {
-    return cart.getItem.reduce((sum, item) => sum + item.price, 0);
+    return cart.getItem.reduce((sum, item) => (sum + item.price) * quantity.value, 0);
 })
-
 
 //Hide or show checkout modal
 const showCheckoutModal = ref(false);
@@ -28,6 +28,13 @@ const phoneRegex = /^0\d{4}\s?\d{6}$/;
 const nameValid = computed(() => formValues.value.name.length >= 3);
 //Reactively calculate validity of phone number
 const phoneValid = computed(() => phoneRegex.test(formValues.value.phone));
+
+//Remove item from cart
+function removeLesson (lessonId) {
+    cart.removeItem(lessonId);
+    //If cart is emptied with this remove then reset quantity back to 1
+    cart.setQuantity(1);
+}
 
 //Handle checkout function
 function handleCheckout() {
@@ -49,6 +56,30 @@ function handleCheckout() {
 
     }
 }
+const quantity = ref(cart.getQuantity);
+//Increment quantity
+function incrementQuantity() {
+    quantity.value += 1;
+    cart.setQuantity(quantity.value);
+}
+function decrementQuantity() {
+    if (quantity.value === 1) {
+        return
+    }
+    quantity.value -= 1;
+    cart.setQuantity(quantity.value);
+}
+
+//This is for user entered quantities make sure its not null or below 1
+function validateQuantity() {
+    if (quantity.value === null || quantity.value === '' || quantity.value < 1) {
+        quantity.value = 1
+        cart.setQuantity(quantity.value);
+      }
+      //Otherwise set the quantity in the store to the user entered value
+      cart.setQuantity(quantity.value);
+}
+
 </script>
 
 <template>
@@ -65,7 +96,7 @@ function handleCheckout() {
                     <h3 class="text-gray-300 pl-5">{{ lesson.location }}</h3>
                     <h3 class="text-white absolute bottom-0 pb-3 right-0 pr-5 font-bold text-lg">£{{ lesson.price }}
                     </h3>
-                    <button @click="cart.removeItem(lesson.id); lesson.spaces += 1"
+                    <button @click="removeLesson(lesson.id)"
                         class="text-blue-500 hover:underline cursor-pointer text-sm absolute bottom-0 left-0 pb-3 pl-5">Remove</button>
                 </div>
             </div>
@@ -83,6 +114,16 @@ function handleCheckout() {
                     <span>Checkout</span>
                     <img class="h-6 w-6 ml-2" src="../assets/shoppingCart.svg">
                 </button>
+                <div class="flex flex-row justify-between text-white border-2 border-indigo-500 rounded-lg ml-3 overflow-hidden">
+                    <button class="w-8 px-2 bg-gray-950 border-r-gray-600 border-gray-950 border-2 hover:bg-gray-600 hover:border-gray-600 transition"
+                    @click="decrementQuantity()">-</button>
+                    <input class="w-10 text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+                        type="number" 
+                        v-model.number="quantity"
+                        @input="validateQuantity()">
+                    <button class="w-8 px-2 bg-gray-950 border-l-gray-600 border-gray-950 border-2 hover:bg-gray-600 hover:border-gray-600 transition"
+                    @click="incrementQuantity()">+</button>
+                </div>
                 <span class="text-white font-bold text-lg pr-5 pl-3 py-1">Total: £{{ total }}</span>
             </div>
         </div>

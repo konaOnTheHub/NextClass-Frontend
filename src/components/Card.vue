@@ -6,6 +6,9 @@ const props = defineProps({
 //Using computed reactively change the availability bubble depending on remaining spaces
 const availability = computed(() => {
     let numSpaces = props.lesson.spaces;
+    if (cart.getItem.some(items => items.id === props.lesson.id)) {
+        numSpaces -= cart.getQuantity
+    }
     if (numSpaces <= 3 && numSpaces > 0) {
         return {
             text: "Limited",
@@ -40,7 +43,6 @@ function addToCart(lesson) {
     if (cart.getItem.some(items => items.id === lesson.id)) {
         return
     }
-    lesson.spaces -= 1;
     cart.addItem(lesson);
 }
 </script>
