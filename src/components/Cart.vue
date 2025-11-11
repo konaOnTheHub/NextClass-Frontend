@@ -1,6 +1,7 @@
 <script setup>
 import { useCartStore } from '@/stores/cart'
 import { computed, ref } from 'vue';
+import InfoBubble from './InfoBubble.vue';
 
 
 //Import pinia cart store
@@ -14,7 +15,7 @@ const total = computed(() => {
 const showCheckoutModal = ref(false);
 
 //Hide or show success message
-const showSuccessMessage = ref(false);
+const showInfoBubble = ref(false);
 
 //These a reactively modelled to the forms
 const formValues = ref({
@@ -48,36 +49,54 @@ function handleCheckout() {
             phone: ""
         }
         showCheckoutModal.value = false;
-        showSuccessMessage.value = true;
-
-        setTimeout(() => {
-            showSuccessMessage.value = false
-        }, 3000)
+        //Show info bubble letting the user know that their order has been processed
+        fireInfoBubble("Your order has been placed successfully!");
 
     }
 }
+const infoBubbleMsg = ref("");
+function fireInfoBubble(msg) {
+    showInfoBubble.value = true;
+    infoBubbleMsg.value = msg;
+    setTimeout(() => {
+        showInfoBubble.value = false;
+    }, 3000)
+}
+
 const quantity = ref(cart.getQuantity);
-//Increment quantity
-function incrementQuantity() {
-    quantity.value += 1;
-    cart.setQuantity(quantity.value);
-}
-function decrementQuantity() {
-    if (quantity.value === 1) {
-        return
-    }
-    quantity.value -= 1;
-    cart.setQuantity(quantity.value);
-}
+// Computed property for validity
+const isQuantityValid = computed(() => {
+  // Check if quantity is empty or invalid
+  if (!quantity.value || quantity.value < 1) return false;
 
-//This is for user entered quantities make sure its not null or below 1
-function validateQuantity() {
-    if (quantity.value === null || quantity.value === '' || quantity.value < 1) {
-        quantity.value = 1
-        cart.setQuantity(quantity.value);
-      }
-      //Otherwise set the quantity in the store to the user entered value
-      cart.setQuantity(quantity.value);
+  // Check if quantity exceeds any lesson's availability
+  if (cart.getItem.some(lesson => lesson.spaces < quantity.value)) {
+    fireInfoBubble("The quantity would exceed one or more lesson's availabilty")
+    return false;
+  }
+  return true;
+});
+//Called when increment button is pressed for quantity
+function incrementQuantity() {
+  quantity.value++;
+  if (!isQuantityValid.value) {
+    quantity.value--;
+  }
+  cart.setQuantity(quantity.value);
+}
+//Called when decrement button is pressed for quanaity
+function decrementQuantity() {
+  if (quantity.value > 1) {
+    quantity.value--;
+    cart.setQuantity(quantity.value);
+  }
+}
+//Called when the user manually inserts a quantity
+function insertQuantity() {
+  if (!isQuantityValid.value) {
+    quantity.value = 1;
+  }
+  cart.setQuantity(quantity.value);
 }
 
 </script>
@@ -120,7 +139,7 @@ function validateQuantity() {
                     <input class="w-10 text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
                         type="number" 
                         v-model.number="quantity"
-                        @input="validateQuantity()">
+                        @blur="insertQuantity()">
                     <button class="w-8 px-2 bg-gray-950 border-l-gray-600 border-gray-950 border-2 hover:bg-gray-600 hover:border-gray-600 transition"
                     @click="incrementQuantity()">+</button>
                 </div>
@@ -170,11 +189,6 @@ function validateQuantity() {
                 </form>
             </div>
         </div>
-        <transition name="fade">
-            <div v-if="showSuccessMessage"
-                class="fixed bottom-10 right-10 bg-gray-950 border border-gray-600 text-white px-6 py-3 rounded-xl shadow-lg font-semibold">
-                Your order has been placed. Thank you!
-            </div>
-        </transition>
+        <InfoBubble :info-message="infoBubbleMsg" :show="showInfoBubble" />
     </div>
 </template>

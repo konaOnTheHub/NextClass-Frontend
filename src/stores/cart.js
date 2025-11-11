@@ -27,6 +27,7 @@ export const useCartStore = defineStore('cart', {
     },
     clearAll() {
       this.items = [];
+      this.quantity = 1;
       this.saveToLocalStorage();
     },
     saveToLocalStorage() {
