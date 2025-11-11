@@ -2,6 +2,7 @@
 import { useCartStore } from '@/stores/cart'
 import { computed, ref } from 'vue';
 import InfoBubble from './InfoBubble.vue';
+import { API_CONFIG } from '@/apiConfig';
 
 
 //Import pinia cart store
@@ -31,29 +32,70 @@ const nameValid = computed(() => formValues.value.name.length >= 3);
 const phoneValid = computed(() => phoneRegex.test(formValues.value.phone));
 
 //Remove item from cart
-function removeLesson (lessonId) {
+function removeLesson(lessonId) {
     cart.removeItem(lessonId);
-    //If cart is emptied with this remove then reset quantity back to 1
-    cart.setQuantity(1);
+    //If cart is emptied with remove reset cart quantity
+    if (cart.getItem.length == 0) {
+        cart.setQuantity(1);
+    }
 }
+
 
 //Handle checkout function
 function handleCheckout() {
     if (nameValid && phoneValid) {
-        // TODO LATER IMPLEMENT FETCH!!!
-        //Clear cart
-        cart.clearAll();
-        //Reset form values
-        formValues.value = {
-            name: "",
-            phone: ""
-        }
-        showCheckoutModal.value = false;
-        //Show info bubble letting the user know that their order has been processed
-        fireInfoBubble("Your order has been placed successfully!");
-
+        //PUT update spaces in database
+        
+        (async () => {
+            for (let lesson of cart.getItem) {
+                try {
+                    const putRes = await fetch(`${API_CONFIG.API_URL}/lesson/${lesson.id}/spaces`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({"value": lesson.spaces - cart.getQuantity})
+                    })
+                    if (!putRes.ok) {
+                        showCheckoutModal.value = false;
+                        fireInfoBubble("Error occured when placing order");
+                        return
+                    }
+                    
+                } catch (error) {  
+                    fireInfoBubble("Error occured when placing order:", err)
+                    return
+                }
+            }
+            try {
+                const res = await fetch(`${API_CONFIG.API_URL}/order`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ "name": formValues.value.name, "phone": formValues.value.phone, "lessonIDs": cart.getItem.map(lesson => lesson.id), "quantity": cart.getQuantity })
+                })
+                if (res.ok) {
+                    //Clear cart
+                    cart.clearAll();
+                    //Reset form values
+                    formValues.value = {
+                        name: "",
+                        phone: ""
+                    }
+                    showCheckoutModal.value = false;
+                    //Show info bubble letting the user know that their order has been processed
+                    fireInfoBubble("Your order has been placed successfully!");
+                } else {
+                    fireInfoBubble("Error occured when placing order")
+                }
+            } catch (err) {
+                fireInfoBubble("Error occured when placing order:", err)
+            }
+        })();
     }
 }
+//POST request for order
 const infoBubbleMsg = ref("");
 //Show info bubble with passed in message
 function fireInfoBubble(msg) {
@@ -67,37 +109,37 @@ function fireInfoBubble(msg) {
 const quantity = ref(cart.getQuantity);
 // Computed property for validity
 const isQuantityValid = computed(() => {
-  // Check if quantity is empty or invalid
-  if (!quantity.value || quantity.value < 1) return false;
+    // Check if quantity is empty or invalid
+    if (!quantity.value || quantity.value < 1) return false;
 
-  // Check if quantity exceeds any lesson's availability
-  if (cart.getItem.some(lesson => lesson.spaces < quantity.value)) {
-    fireInfoBubble("The quantity would exceed one or more lesson's availabilty")
-    return false;
-  }
-  return true;
+    // Check if quantity exceeds any lesson's availability
+    if (cart.getItem.some(lesson => lesson.spaces < quantity.value)) {
+        fireInfoBubble("The quantity would exceed one or more lesson's availabilty")
+        return false;
+    }
+    return true;
 });
 //Called when increment button is pressed for quantity
 function incrementQuantity() {
-  quantity.value++;
-  if (!isQuantityValid.value) {
-    quantity.value--;
-  }
-  cart.setQuantity(quantity.value);
+    quantity.value++;
+    if (!isQuantityValid.value) {
+        quantity.value--;
+    }
+    cart.setQuantity(quantity.value);
 }
 //Called when decrement button is pressed for quanaity
 function decrementQuantity() {
-  if (quantity.value > 1) {
-    quantity.value--;
-    cart.setQuantity(quantity.value);
-  }
+    if (quantity.value > 1) {
+        quantity.value--;
+        cart.setQuantity(quantity.value);
+    }
 }
 //Called when the user manually inserts a quantity
 function insertQuantity() {
-  if (!isQuantityValid.value) {
-    quantity.value = 1;
-  }
-  cart.setQuantity(quantity.value);
+    if (!isQuantityValid.value) {
+        quantity.value = 1;
+    }
+    cart.setQuantity(quantity.value);
 }
 
 </script>
@@ -134,15 +176,17 @@ function insertQuantity() {
                     <span>Checkout</span>
                     <img class="h-6 w-6 ml-2" src="../assets/shoppingCart.svg">
                 </button>
-                <div class="flex flex-row justify-between text-white border-2 border-indigo-500 rounded-lg ml-3 overflow-hidden">
-                    <button class="w-8 px-2 bg-gray-950 border-r-gray-600 border-gray-950 border-2 hover:bg-gray-600 hover:border-gray-600 transition"
-                    @click="decrementQuantity()">-</button>
-                    <input class="w-10 text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
-                        type="number" 
-                        v-model.number="quantity"
-                        @blur="insertQuantity()">
-                    <button class="w-8 px-2 bg-gray-950 border-l-gray-600 border-gray-950 border-2 hover:bg-gray-600 hover:border-gray-600 transition"
-                    @click="incrementQuantity()">+</button>
+                <div
+                    class="flex flex-row justify-between text-white border-2 border-indigo-500 rounded-lg ml-3 overflow-hidden">
+                    <button
+                        class="w-8 px-2 bg-gray-950 border-r-gray-600 border-gray-950 border-2 hover:bg-gray-600 hover:border-gray-600 transition"
+                        @click="decrementQuantity()">-</button>
+                    <input
+                        class="w-10 text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        type="number" v-model.number="quantity" @blur="insertQuantity()">
+                    <button
+                        class="w-8 px-2 bg-gray-950 border-l-gray-600 border-gray-950 border-2 hover:bg-gray-600 hover:border-gray-600 transition"
+                        @click="incrementQuantity()">+</button>
                 </div>
                 <span class="text-white font-bold text-lg pr-5 pl-3 py-1">Total: £{{ total }}</span>
             </div>
@@ -164,7 +208,8 @@ function insertQuantity() {
                         <input v-model="formValues.name" type="text" placeholder="Enter your name"
                             class="w-full border-2 text-gray-300 border-gray-600 rounded-lg p-2 focus:outline-none focus:border-indigo-500">
                         <!--Show only if name is invalid-->
-                        <h3 v-if="!nameValid && formValues.name.length > 0" class="text-gray-300 text-xs pt-1">The name must be longer than 3 letters
+                        <h3 v-if="!nameValid && formValues.name.length > 0" class="text-gray-300 text-xs pt-1">The name
+                            must be longer than 3 letters
                         </h3>
                     </div>
                     <!--Input for phone number-->
@@ -173,7 +218,8 @@ function insertQuantity() {
                         <input v-model="formValues.phone" type="tel" placeholder="Enter your phone number"
                             class="w-full border-2 text-gray-300 border-gray-600 rounded-lg p-2 focus:outline-none focus:border-indigo-500">
                         <!--Show only if phone is invalid-->
-                        <h3 v-if="!phoneValid && formValues.phone.length > 0" class="text-gray-300 text-xs pt-1">The phone number be 11
+                        <h3 v-if="!phoneValid && formValues.phone.length > 0" class="text-gray-300 text-xs pt-1">The
+                            phone number be 11
                             digits and start with 0</h3>
                     </div>
                     <div class="flex justify-end">
