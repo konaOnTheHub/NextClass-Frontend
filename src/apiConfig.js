@@ -1,3 +1,3 @@
 export const API_CONFIG = {
-    API_URL: "http://localhost:5555"
+    API_URL: "https://nextclass-backend-cupy.onrender.com"
 };

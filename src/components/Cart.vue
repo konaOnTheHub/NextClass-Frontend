@@ -45,7 +45,6 @@ function removeLesson(lessonId) {
 function handleCheckout() {
     if (nameValid && phoneValid) {
         //PUT update spaces in database
-        
         (async () => {
             for (let lesson of cart.getItem) {
                 try {
