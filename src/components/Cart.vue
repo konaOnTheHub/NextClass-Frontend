@@ -55,6 +55,7 @@ function handleCheckout() {
     }
 }
 const infoBubbleMsg = ref("");
+//Show info bubble with passed in message
 function fireInfoBubble(msg) {
     showInfoBubble.value = true;
     infoBubbleMsg.value = msg;
