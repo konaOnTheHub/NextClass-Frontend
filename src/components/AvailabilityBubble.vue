@@ -51,10 +51,12 @@ watch(availability, (newVal) => {
 
 <template>
     <div class="relative group">
+        <!--Availability text (open, limited, closed)-->
         <span
             :class="`${availability.colour} ${availability.hoverColour} text-white text-sm font-semibold px-3 py-1 rounded-full cursor-pointer`">
             {{ availability.text }}
         </span>
+        <!--On hover show number of spaces left-->
         <div v-if="availability.numSpaces > 0"
             class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-max bg-gray-900 text-white text-xs rounded px-3 py-1 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 shadow">
             {{ availability.numSpaces }} space{{ availability.numSpaces === 1 ? '' : 's' }} available

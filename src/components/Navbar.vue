@@ -101,13 +101,14 @@ onBeforeUnmount(() => {
                 class="w-96 h-10 px-4 text-sm text-white rounded-lg ring-2 ring-indigo-500 focus:outline-none hidden lg:block" />
 
         </div>
-        <!--Spacer that ensures right panel sticks to the right. Was using ml-auto before this and that caused problems.-->>
+        <!--Spacer that ensures right panel sticks to the right. Was using ml-auto before this and that caused problems.-->
         <div class="flex-1"></div>
 
         <!-- Right Panel -->
         <div class="flex items-center h-full ">
             <div class="relative mr-8 h-8">
-
+                <!--Small screen search button and input field-->
+                <!--Show input only if button has been pressed-->
                 <input v-if="showSearch" v-model="smallQuery" ref="smallSearchInput" @focusin="showSmallSearchDropdown = true"
                     placeholder="Search"
                     class="w-60 h-8 pl-10 rounded-full border-2 border-indigo-500 text-white focus:outline-none block lg:hidden">
@@ -132,10 +133,6 @@ onBeforeUnmount(() => {
                 <div class="flex items-center space-x-6">
                     <RouterLink v-if="!showSearch" to="/"
                         class="text-white text-base m-3 hover:text-indigo-400 transition-colors">Home</RouterLink>
-                    <RouterLink v-if="!showSearch" to="#"
-                        class="text-white text-base m-3 hover:text-indigo-400 transition-colors">Contact</RouterLink>
-                    <RouterLink v-if="!showSearch" to="#"
-                        class="text-white text-base m-3 hover:text-indigo-400 transition-colors">About</RouterLink>
 
                     <!-- Shopping Cart Button -->
                     <RouterLink :to="cartLink" class="relative flex items-center justify-center w-10 h-10"
