@@ -1,6 +1,10 @@
 <script setup>
 import { ref, nextTick, onMounted, onBeforeUnmount, defineProps, computed } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
+import SearchCards from './SearchCards.vue';
+
+const query = ref("");
+const smallQuery = ref("");
 
 //States (Search)
 const showSearch = ref(false);
@@ -23,6 +27,7 @@ function handleShowSearch() {
         });
     } else {
         showSmallSearchDropdown.value = false;
+        smallQuery.value = ""
     }
 };
 function handleClickOutside(event) {
@@ -49,27 +54,29 @@ function handleClickOutside(event) {
     showSearch.value = false;
     showSmallSearchDropdown.value = false;
     showSearchDropdown.value = false;
+    query.value = "";
+    smallQuery.value = ""
 };
-    //Define cart count prop
-    const props = defineProps({
-        cartCount: {
-            type: String,
-        },
-    });
-    //When on cart page cart icon should lead to home
-    //Home should only lead to cart when there's something in the cart
-    //Disable button when on home but cart is empty.
-    const route = useRoute();
-    const cartLink = computed(() => {
-        if (route.path === "/cart") {
-            return "/"
-        } else if (route.path === "/" && props.cartCount > 0) {
-            return "/cart"
-        } else {
-            return "/"
-        }
-    });
-   
+//Define cart count prop
+const props = defineProps({
+    cartCount: {
+        type: String,
+    },
+});
+//When on cart page cart icon should lead to home
+//Home should only lead to cart when there's something in the cart
+//Disable button when on home but cart is empty.
+const route = useRoute();
+const cartLink = computed(() => {
+    if (route.path === "/cart") {
+        return "/"
+    } else if (route.path === "/" && props.cartCount > 0) {
+        return "/cart"
+    } else {
+        return "/"
+    }
+});
+
 
 onMounted(() => {
     document.addEventListener('click', handleClickOutside)
@@ -89,7 +96,7 @@ onBeforeUnmount(() => {
 
         <!-- Middle Search Field -->
         <div class="absolute left-1/2 transform -translate-x-1/2">
-            <input type="text" @focusin="showSearchDropdown = true" ref="largeSearchInput"
+            <input type="text" v-model="query" @focusin="showSearchDropdown = true" ref="largeSearchInput"
                 placeholder="Search classes..."
                 class="w-96 h-10 px-4 text-sm text-white rounded-lg ring-2 ring-indigo-500 focus:outline-none hidden lg:block" />
 
@@ -101,17 +108,22 @@ onBeforeUnmount(() => {
         <div class="flex items-center h-full ">
             <div class="relative mr-8 h-8">
 
-                <input v-if="showSearch" ref="smallSearchInput" @focusin="showSmallSearchDropdown = true"
+                <input v-if="showSearch" v-model="smallQuery" ref="smallSearchInput" @focusin="showSmallSearchDropdown = true"
                     placeholder="Search"
                     class="w-60 h-8 pl-10 rounded-full border-2 border-indigo-500 text-white focus:outline-none block lg:hidden">
                 <button @click="handleShowSearch" ref="searchButton" tabindex="0"
                     class="cursor-pointer absolute left-0 top-0 w-8 h-8 block lg:hidden bg-indigo-500 rounded-full p-1.5">
                     <img src="/src/assets/search.svg" alt="Search">
                 </button>
-                <!--Search-->
-                <div v-if="showSmallSearchDropdown" ref="smallSearchResults"
-                    class="w-full h-40 bg-gray-950 border-2 border-gray-600 mt-[11px] rounded-b-lg opacity-95">
-
+                <!--Small Search results-->
+                <div v-if="showSmallSearchDropdown" ref="smallSearchResults" class="absolute w-60 bg-gray-950 border-2 border-gray-600 mt-[11px] rounded-b-lg opacity-95 z-10 
+           max-h-60 overflow-y-auto overflow-x-hidden">
+                    <p v-if="smallQuery === ''" class="p-2 text-center text-gray-400 text-sm">
+                        Search by name, location, spaces or price
+                    </p>
+                    <div class="px-1">
+                        <SearchCards :query="smallQuery" />
+                    </div>
                 </div>
 
             </div>
@@ -126,7 +138,8 @@ onBeforeUnmount(() => {
                         class="text-white text-base m-3 hover:text-indigo-400 transition-colors">About</RouterLink>
 
                     <!-- Shopping Cart Button -->
-                    <RouterLink :to="cartLink" class="relative flex items-center justify-center w-10 h-10" title="View Cart">
+                    <RouterLink :to="cartLink" class="relative flex items-center justify-center w-10 h-10"
+                        title="View Cart">
 
                         <!-- Cart Icon -->
                         <img src="/src/assets/shoppingCart.svg" alt="Cart" class="w-6 h-6 object-contain" />
@@ -143,9 +156,15 @@ onBeforeUnmount(() => {
     </nav>
 
     <!-- Search results big screen -->
-    <div v-if="showSearchDropdown" ref="largeSearchResults"
-        class="fixed left-1/2 transform -translate-x-1/2 flex justify-center opacity-95 border-2 rounded-b-lg border-gray-600 z-1 top-13 h-32 w-96 bg-gray-950 text-gray-600">
-        <p>Search by name</p>
+    <div v-if="showSearchDropdown" ref="largeSearchResults" class="fixed left-1/2 transform -translate-x-1/2 flex flex-col justify-start
+         opacity-95 border-2 rounded-b-lg border-gray-600 z-10 top-[54px]
+         w-96 bg-gray-950 text-gray-600 max-h-96 overflow-y-auto overflow-x-hidden">
+        <p v-if="query === ''" class="p-2 text-center">
+            Search by name, location, spaces or price
+        </p>
+        <div class="px-1">
+            <SearchCards :query="query" />
+        </div>
     </div>
 
 </template>

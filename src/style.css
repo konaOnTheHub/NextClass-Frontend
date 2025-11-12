@@ -5,3 +5,25 @@ body {
     background-color: #101828;
 }
 
+/* Custom thin dark scrollbar */
+::-webkit-scrollbar {
+  width: 6px;             
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;    
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #374151; 
+  border-radius: 9999px;     
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #4b5563; 
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #374151 #0f172a;
+}
