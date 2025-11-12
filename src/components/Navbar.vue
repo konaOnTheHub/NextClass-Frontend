@@ -156,7 +156,7 @@ onBeforeUnmount(() => {
     <div v-if="showSearchDropdown" ref="largeSearchResults" class="fixed left-1/2 transform -translate-x-1/2 flex flex-col justify-start
          opacity-95 border-2 rounded-b-lg border-gray-600 z-10 top-[54px]
          w-96 bg-gray-950 text-gray-600 max-h-96 overflow-y-auto overflow-x-hidden">
-        <p v-if="query === ''" class="p-2 text-center">
+        <p v-if="query === ''" class="p-2 text-center text-gray-400">
             Search by name, location, spaces or price
         </p>
         <div class="px-1">

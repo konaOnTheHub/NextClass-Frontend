@@ -34,7 +34,6 @@ async function fetchSearch(query) {
 //Watch for changes in query prop fire fetch function if there is
 watch(() => props.query,
 (newQuery) => {
-    console.log(newQuery)
     fetchSearch(newQuery);
 });
 </script>
@@ -42,5 +41,6 @@ watch(() => props.query,
 <template>
   <div class="w-full grid grid-cols-1 gap-2 pt-2 pb-2">
     <SearchCard v-for="lesson in searchResults" :key="lesson.id" :lesson="lesson"/>
+    <p class="p-2 text-center text-gray-400" v-if="props.query && searchResults.length === 0">No results for '{{props.query}}'</p>
   </div>
 </template>
